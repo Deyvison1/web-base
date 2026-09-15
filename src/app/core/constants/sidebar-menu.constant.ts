@@ -8,12 +8,12 @@ export const SIDEBAR_MENU: SidebarItem[] = [
   {
     label: 'Início',
     icon: 'home',
-    route: '/home',
+    route: '/',
   },
   {
-    label: 'Meus Dados',
+    label: 'Clientes',
     icon: 'person',
-    route: '/meus-dados',
+    route: '/client',
   },
   {
     label: 'Serviços Contratados',

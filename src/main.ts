@@ -6,16 +6,8 @@ import localePt from '@angular/common/locales/pt';
 
 import { registerLocaleData } from '@angular/common';
 
-import { KeycloakService } from './app/core/service/keycloak.service';
 import { App } from './app/app';
 
 registerLocaleData(localePt);
-
-const keycloakService = new KeycloakService();
-
-keycloakService.init().then(() => {
-  bootstrapApplication(App, {
-    ...appConfig,
-    providers: [{ provide: KeycloakService, useValue: keycloakService }, ...appConfig.providers],
-  }).catch((err) => console.error(err));
-});
+bootstrapApplication(App, appConfig)
+  .catch(err => console.error(err));

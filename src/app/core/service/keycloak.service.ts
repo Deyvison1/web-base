@@ -17,7 +17,6 @@ export class KeycloakService {
         checkLoginIframe: false,
       });
 
-      console.log('Keycloak inicializado');
     } catch (error) {
       console.error('Erro ao inicializar o Keycloak:', error);
       throw error;

@@ -1,0 +1,284 @@
+.form-container {
+  padding: 20px 0;
+
+  & + .form-container {
+    margin-top: 20px;
+    border-top: 1px solid #e2e8f0;
+  }
+}
+
+.contract-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.contract-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  span:first-child {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+}
+
+.active-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.contract-header button {
+  flex-shrink: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+  min-width: 0;
+  gap: 16px;
+}
+
+.form-grid mat-form-field {
+  width: 100%;
+  min-width: 0;
+}
+
+.product-field {
+  grid-column: span 2;
+}
+
+.product-option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.product-option-name {
+  font-weight: 500;
+}
+
+.product-option-details {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.product-summary {
+  padding: 18px;
+  border: 1px solid #dbe4ee;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.product-summary-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.product-summary-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+
+  mat-icon {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: #64748b;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  strong {
+    color: #1e293b;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  span {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+}
+
+.category-badge {
+  flex-shrink: 0;
+
+  display: inline-flex;
+  align-items: center;
+
+  padding: 4px 9px;
+  border-radius: 999px;
+
+  background: #e2e8f0;
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.product-summary-info {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.product-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #ffffff;
+
+  span {
+    color: #64748b;
+    font-size: 12px;
+  }
+
+  strong {
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+.contract-status {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.contract-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+
+  button {
+    min-height: 40px;
+    padding: 0 16px;
+
+    mat-icon {
+      margin-right: 6px;
+    }
+  }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 8px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e2e8f0;
+
+  mat-icon {
+    width: 22px;
+    height: 22px;
+    font-size: 22px;
+    color: #64748b;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #64748b;
+  }
+}
+
+.address-header {
+  margin-top: 4px;
+}
+
+[formGroupName='address'] {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .product-field {
+    grid-column: span 2;
+  }
+
+  .product-summary-info {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .contract-header {
+    align-items: flex-start;
+  }
+
+  .contract-title {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-field {
+    grid-column: auto;
+  }
+
+  .product-summary-header {
+    flex-direction: column;
+  }
+
+  .product-summary-info {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .form-grid mat-slide-toggle {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-summary-info {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,53 @@
+  <div class="form-container">
+    <div class="contact-header">
+      <div class="contact-title">
+        <span>Contato {{ index + 1 }}</span>
+
+        @if (form.controls['primaryContact'].value) {
+          <span class="primary-badge"> Principal </span>
+        }
+      </div>
+
+      <button
+        mat-icon-button
+        type="button"
+        color="warn"
+        aria-label="Remover contato"
+        title="Remover contato"
+        (click)="remover()"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+
+    <div [formGroup]="form" class="form">
+      <!-- Valor -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contato</mat-label>
+
+        <input
+          matInput
+          [id]="'value-' + index"
+          type="text"
+          formControlName="value"
+          placeholder="E-mail ou telefone"
+          autocomplete="off"
+          appContact
+        />
+
+        @if (form.controls['value'].touched && form.controls['value'].invalid) {
+          <mat-error>
+            <app-form-error [control]="form.controls['value']" />
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <div class="contact-options">
+        <mat-checkbox formControlName="whatsapp"> WhatsApp </mat-checkbox>
+
+        <mat-checkbox formControlName="primaryContact" (change)="primaryChanged.emit($event.checked)">
+          Contato principal
+        </mat-checkbox>
+      </div>
+    </div>
+  </div>

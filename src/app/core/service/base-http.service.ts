@@ -1,0 +1,28 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ApiResponseDTO } from '../../shared/dto/response/api-response.dto';
+import { PageResponseDTO } from '../../shared/dto/response/page-response.dto';
+export abstract class BaseHttpService {
+  protected http = inject(HttpClient);
+
+  protected getFindAll<T>(url: string, params?: HttpParams): Observable<ApiResponseDTO<T>> {
+    return this.http.get<ApiResponseDTO<T>>(url, { params });
+  }
+
+  protected getPageFindAll<T>(url: string, params?: HttpParams): Observable<PageResponseDTO<T>> {
+    return this.http.get<PageResponseDTO<T>>(url, { params });
+  }
+
+  protected getFindById<T>(url: string, id: string): Observable<ApiResponseDTO<T>> {
+    return this.http.get<ApiResponseDTO<T>>(`${url}/${id}`);
+  }
+
+  protected post<T>(url: string, body: unknown): Observable<ApiResponseDTO<T>> {
+    return this.http.post<ApiResponseDTO<T>>(url, body);
+  }
+
+  protected remove<T>(url: string, id: string): Observable<ApiResponseDTO<T>> {
+    return this.http.delete<ApiResponseDTO<T>>(`${url}/${id}`);
+  }
+}

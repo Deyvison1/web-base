@@ -1,0 +1,189 @@
+<div class="page-container">
+  <app-page-header [titleInput]="'Detalhes do Cliente'" [pathToBack]="'client'" [isGrid]="false" />
+
+  @if (client) {
+    <div class="client-view">
+      <!-- Resumo -->
+      <section class="client-summary card">
+        <div class="avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+
+        <div class="summary-info">
+          <h2>{{ client.name }}</h2>
+
+          <span>{{ client.documento | cpfCnpj }}</span>
+        </div>
+
+        <div class="summary-actions">
+          <button mat-flat-button color="primary" type="button" (click)="editClient()">
+            <mat-icon>edit</mat-icon>
+            Editar
+          </button>
+        </div>
+      </section>
+
+      <!-- Dados + Contatos -->
+      <div class="content-grid">
+        <section class="info-card card">
+          <div class="card-header">
+            <mat-icon>badge</mat-icon>
+            <h3>Dados pessoais</h3>
+          </div>
+
+          <div class="info-grid">
+            <div class="info-item">
+              <span>Nome</span>
+              <strong>{{ client.name || '—' }}</strong>
+            </div>
+
+            <div class="info-item">
+              <span>CPF/CNPJ</span>
+              <strong>
+                {{ client.documento | cpfCnpj }}
+              </strong>
+            </div>
+
+            @if (client.documento.replace(/\D/g, '').length === 11) {
+              <div class="info-item">
+                <span>Data de nascimento</span>
+                <strong>
+                  {{ client.birthDate ? (client.birthDate | date: 'dd/MM/yyyy') : '—' }}
+                </strong>
+              </div>
+            }
+
+            <div class="info-item">
+              <span>Cliente desde</span>
+              <strong>
+                {{ client.creationDate ? (client.creationDate | date: 'dd/MM/yyyy') : '—' }}
+              </strong>
+            </div>
+
+            <div class="info-item full">
+              <span>Observação</span>
+              <strong>
+                {{ client.observation || 'Nenhuma observação.' }}
+              </strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="info-card card">
+          <div class="card-header">
+            <mat-icon>contacts</mat-icon>
+            <h3>Contatos</h3>
+          </div>
+
+          @for (contact of client.contacts; track contact.id ?? $index) {
+            <div class="contact-item">
+              <div class="contact-info">
+                <div class="contact-value">
+                  <strong>{{ contact.value | contact }}</strong>
+
+                  <button
+                    mat-icon-button
+                    type="button"
+                    matTooltip="Copiar contato"
+                    aria-label="Copiar contato"
+                    (click)="copyContact(contact.value)"
+                  >
+                    <mat-icon>content_copy</mat-icon>
+                  </button>
+                </div>
+
+                <div class="badges">
+                  @if (contact.whatsapp) {
+                    <span class="badge whatsapp">WhatsApp</span>
+                  }
+
+                  @if (contact.primaryContact) {
+                    <span class="badge primary">Principal</span>
+                  }
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">Nenhum contato cadastrado.</div>
+          }
+        </section>
+      </div>
+
+      <!-- Contratos -->
+      <section class="info-card card">
+        <div class="card-header">
+          <mat-icon>description</mat-icon>
+          <h3>Contratos</h3>
+        </div>
+
+        @for (contract of client.contracts; track contract.id ?? $index) {
+          <div class="contract-item">
+            <div class="contract-item-header">
+              <div>
+                <strong>
+                  {{ contract.product?.name ?? 'Contrato' }}
+                </strong>
+
+                @if (contract.active) {
+                  <span class="active-badge">Ativo</span>
+                } @else {
+                  <span class="inactive-badge">Inativo</span>
+                }
+              </div>
+
+              <div class="contract-price">
+                <span>Valor do contrato</span>
+                <strong>
+                  {{ contract.value | currency: 'BRL' }}
+                </strong> 
+              </div>
+            </div>
+
+            <div class="contract-info">
+              <div class="info-item">
+                <span>Início</span>
+                <strong>
+                  {{ contract.startDate ? (contract.startDate | date: 'dd/MM/yyyy') : '—' }}
+                </strong>
+              </div>
+
+              <div class="info-item">
+                <span>Vencimento</span>
+                <strong>
+                  {{ contract.endDate ? (contract.endDate | date: 'dd/MM/yyyy') : 'Indeterminado' }}
+                </strong>
+              </div>
+
+              @if (contract.address) {
+                <div class="info-item">
+                  <span>Endereço</span>
+                  <strong>
+                    {{ contract.address.logradouro || 'Endereço não informado' }}
+                  </strong>
+                  <small>
+                    {{ contract.address.bairro }}
+                    · {{ contract.address.localidade }}/{{ contract.address.uf }}
+                  </small>
+                </div>
+              }
+
+              @if (contract.product) {
+                <div class="info-item">
+                  <span>Velocidade</span>
+                  <strong>
+                    {{ contract.product.speedDownload }} Mbps ↓
+                    {{ contract.product.speedUpload }} Mbps ↑
+                  </strong>
+                </div>
+              }
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-state">Nenhum contrato cadastrado.</div>
+        }
+      </section>
+    </div>
+  } @else {
+    <div class="loading-view">Carregando cliente...</div>
+  }
+</div>

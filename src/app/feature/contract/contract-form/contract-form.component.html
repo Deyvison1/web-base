@@ -1,0 +1,189 @@
+<div class="form-container">
+  <div class="contract-header">
+    <div class="contract-title">
+      <span>Contrato {{ index + 1 }}</span>
+
+      @if (form.controls['active'].value) {
+        <span class="active-badge"> Ativo </span>
+      }
+    </div>
+
+    <button
+      mat-icon-button
+      type="button"
+      color="warn"
+      aria-label="Remover contrato"
+      title="Remover contrato"
+      (click)="remover()"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+
+  <div [formGroup]="form" class="form">
+    <!-- Dados do contrato -->
+    <div class="contract-data">
+      <div class="form-grid">
+        <!-- Produto -->
+        <mat-form-field appearance="outline" class="product-field">
+          <mat-label>Produto</mat-label>
+
+          <mat-select formControlName="productId" (selectionChange)="selectProduct($event.value)">
+            @for (product of products; track product.key) {
+              <mat-option [value]="product.key">
+                <div class="product-option">
+                  <span class="product-option-name">
+                    {{ product.value }}
+                  </span>
+
+                  <span class="product-option-details">
+                    {{ selectedProduct?.speedDownload }} Mbps ↓
+                    {{ selectedProduct?.speedUpload }} Mbps ↑
+                  </span>
+                </div>
+              </mat-option>
+            }
+          </mat-select>
+
+          @if (form.controls['productId'].touched && form.controls['productId'].invalid) {
+            <mat-error>
+              <app-form-error [control]="form.controls['productId']" />
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Valor do contrato -->
+        <mat-form-field appearance="outline">
+          <mat-label>Valor do contrato</mat-label>
+
+          <input
+            matInput
+            type="text"
+            formControlName="value"
+            currencyMask
+            [currencyMask]="{
+              prefix: 'R$ ',
+              thousands: '.',
+              decimal: ',',
+              precision: 2,
+            }"
+          />
+
+          @if (form.controls['value'].touched && form.controls['value'].invalid) {
+            <mat-error>
+              <app-form-error [control]="form.controls['value']" />
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Data de início -->
+        <mat-form-field appearance="outline">
+          <mat-label>Data de início</mat-label>
+
+          <input
+            matInput
+            [matDatepicker]="startDatePicker"
+            formControlName="startDate"
+            (dateChange)="onStartDateChange($event)"
+          />
+
+          <mat-datepicker-toggle matIconSuffix [for]="startDatePicker" />
+
+          <mat-datepicker #startDatePicker />
+
+          @if (form.controls['startDate'].touched && form.controls['startDate'].invalid) {
+            <mat-error>
+              <app-form-error [control]="form.controls['startDate']" />
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Data de término -->
+        <mat-form-field appearance="outline">
+          <mat-label>Data de término</mat-label>
+
+          <input matInput [matDatepicker]="endDatePicker" formControlName="endDate" />
+
+          <mat-datepicker-toggle matIconSuffix [for]="endDatePicker" />
+
+          <mat-datepicker #endDatePicker />
+        </mat-form-field>
+      </div>
+
+      <!-- Resumo do produto -->
+      @if (selectedProduct) {
+        <div class="product-summary">
+          <div class="product-summary-header">
+            <div class="product-summary-title">
+              <mat-icon>router</mat-icon>
+
+              <div>
+                <strong>{{ selectedProduct.name }}</strong>
+
+                @if (selectedProduct.description) {
+                  <span>
+                    {{ selectedProduct.description }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            @if (selectedProduct.category?.name) {
+              <span class="category-badge">
+                {{ selectedProduct.category.name }}
+              </span>
+            }
+          </div>
+
+          <div class="product-summary-info">
+            <div class="product-info-item">
+              <span>Download</span>
+              <strong> {{ selectedProduct.speedDownload }} Mbps </strong>
+            </div>
+
+            <div class="product-info-item">
+              <span>Upload</span>
+              <strong> {{ selectedProduct.speedUpload }} Mbps </strong>
+            </div>
+
+            <div class="product-info-item">
+              <span>Valor do plano</span>
+              <strong>
+                {{ selectedProduct.value | currency: 'BRL' }}
+              </strong>
+            </div>
+
+            <div class="product-info-item">
+              <span>Wi-Fi</span>
+              <strong>
+                {{ selectedProduct.valueWifi | currency: 'BRL' }}
+              </strong>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="contract-status">
+        <mat-slide-toggle formControlName="active"> Contrato ativo </mat-slide-toggle>
+      </div>
+    </div>
+
+    <!-- Endereço -->
+    <div class="section-header address-header">
+      <mat-icon>location_on</mat-icon>
+      <div>
+        <h3>Endereço do contrato</h3>
+        <p>Informe o endereço onde o serviço será instalado.</p>
+      </div>
+    </div>
+
+    <app-address-form [form]="form.controls['address']" />
+  </div>
+
+  <div class="contract-footer">
+    <button matButton="filled" type="button" (click)="adicionarContrato()">
+      <mat-icon>add</mat-icon>
+      Adicionar outro contrato
+    </button>
+  </div>
+</div>

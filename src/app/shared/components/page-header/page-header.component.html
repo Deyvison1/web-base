@@ -1,0 +1,10 @@
+<div class="page-header">
+  @if (!isGrid()) {
+    <button matButton type="button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  } @else {
+    <div class="back-placeholder"></div>
+  }
+  <h2>{{ title() }}</h2>
+</div>

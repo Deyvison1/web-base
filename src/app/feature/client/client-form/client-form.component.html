@@ -1,0 +1,183 @@
+<div class="page-container">
+  <app-page-header
+    [titleInput]="'Cadastro de Cliente'"
+    [pathToBack]="pathToBack"
+    [isGrid]="false"
+  ></app-page-header>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <mat-tab-group
+      class="cadastro-tabs"
+      [animationDuration]="'0ms'"
+      (selectedIndexChange)="onTabChange($event)"
+    >
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>person</mat-icon>
+          <span>Cliente</span>
+        </ng-template>
+
+        <div class="tab-content">
+          <div class="content-card">
+            <div class="form-row">
+              <div class="client-main-fields" [class.client-main-fields--cnpj]="!isCpf()">
+                <mat-form-field appearance="outline">
+                  <mat-label>CPF ou CNPJ</mat-label>
+
+                  <input
+                    matInput
+                    type="text"
+                    placeholder="Digite o CPF ou CNPJ"
+                    maxlength="18"
+                    autocomplete="off"
+                    formControlName="documento"
+                    appCpfCnpj
+                  />
+
+                  @if (form.controls.documento.touched && form.controls.documento.invalid) {
+                    <mat-error>
+                      <app-form-error [control]="form.controls.documento" />
+                    </mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Nome</mat-label>
+
+                  <input
+                    matInput
+                    type="text"
+                    placeholder="Digite o Nome"
+                    autocomplete="off"
+                    formControlName="name"
+                  />
+
+                  @if (form.controls.name.touched && form.controls.name.invalid) {
+                    <mat-error>
+                      <app-form-error [control]="form.controls.name" />
+                    </mat-error>
+                  }
+                </mat-form-field>
+
+                @if (isCpf()) {
+                  <mat-form-field appearance="outline" class="date-field">
+                    <mat-label>Data de nascimento</mat-label>
+
+                    <input matInput [matDatepicker]="picker" formControlName="birthDate" />
+
+                    <mat-datepicker-toggle matIconSuffix [for]="picker">
+                      <mat-icon matDatepickerToggleIcon>calendar_month</mat-icon>
+                    </mat-datepicker-toggle>
+
+                    <mat-datepicker #picker></mat-datepicker>
+
+                    @if (form.controls.birthDate.touched && form.controls.birthDate.invalid) {
+                      <mat-error>
+                        <app-form-error [control]="form.controls.birthDate" />
+                      </mat-error>
+                    }
+                  </mat-form-field>
+                }
+              </div>
+
+              <mat-form-field appearance="outline" class="observacoes-field">
+                <mat-label>Observações</mat-label>
+
+                <textarea
+                  matInput
+                  placeholder="Digite alguma observação..."
+                  rows="5"
+                  formControlName="observation"
+                ></textarea>
+              </mat-form-field>
+
+              <section class="contatos">
+                <div class="contatos-header">
+                  <div class="contatos-title">
+                    <div class="title-line">
+                      <mat-icon>contacts</mat-icon>
+                      <h3>Contatos</h3>
+
+                      @if (contacts.length > 0) {
+                        <span class="contatos-count">
+                          {{ contacts.length }}
+                        </span>
+                      }
+                    </div>
+
+                    <p>Telefones e e-mails para contato com o cliente.</p>
+                  </div>
+
+                  <button mat-stroked-button type="button" (click)="adicionarContato()">
+                    <mat-icon>add</mat-icon>
+                    Adicionar contato
+                  </button>
+                </div>
+
+                @if (contacts.length === 0) {
+                  <div class="contatos-empty">
+                    <mat-icon>person_add</mat-icon>
+
+                    <div>
+                      <strong>Nenhum contato cadastrado</strong>
+                      <span> Adicione um telefone ou e-mail para este cliente. </span>
+                    </div>
+                  </div>
+                }
+
+                <div class="contatos-list">
+                  @for (contato of contacts.controls; track contato) {
+                    <app-contact-form
+                      [form]="contato"
+                      [index]="$index"
+                      (removerContato)="removerContato($index)"
+                      (primaryChanged)="onPrimaryChanged($index, $event)"
+                    />
+                  }
+                </div>
+
+                @if (contacts.touched && contacts.hasError('multiplePrimaryContacts')) {
+                  <mat-error>
+                    <app-form-error [control]="contacts" />
+                  </mat-error>
+                }
+              </section>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab [disabled]="!isFormClientValid()">
+        <ng-template mat-tab-label>
+          <mat-icon>description</mat-icon>
+          <span>Contrato</span>
+        </ng-template>
+
+        <div class="tab-content">
+          <div class="content-card">
+            <div class="contratos-list">
+              @for (contrato of contracts.controls; track contrato; let i = $index) {
+                <app-contract-form
+                  [form]="contrato"
+                  [index]="i"
+                  [products]="products"
+                  [clientResponse]="clientResponse"
+                  (adicionarNovoContrato)="adicionarContrato()"
+                  (removeContract)="removerContract($index)"
+                />
+              }
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div class="form-actions">
+      <button mat-stroked-button type="button" routerLink="/client">Cancelar</button>
+
+      <button mat-raised-button type="submit">
+        <mat-icon>save</mat-icon>
+        Salvar cliente
+      </button>
+    </div>
+  </form>
+</div>

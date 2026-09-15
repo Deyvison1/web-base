@@ -1,0 +1,162 @@
+<div class="page-container">
+  <app-page-header [titleInput]="'Listagem de Clientes'" [isGrid]="true" />
+
+  <div class="client-list card">
+    <div class="list-toolbar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Pesquisar</mat-label>
+
+        <input
+          matInput
+          type="text"
+          placeholder="Nome ou CPF/CNPJ"
+          [(ngModel)]="search"
+          (keyup.enter)="findAll()"
+        />
+
+        @if (search) {
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            class="clear-button"
+            aria-label="Limpar pesquisa"
+            matTooltip="Limpar pesquisa"
+            (click)="clearSearch()"
+          >
+            <mat-icon>backspace</mat-icon>
+          </button>
+        } @else {
+          <mat-icon matSuffix>search</mat-icon>
+        }
+      </mat-form-field>
+
+      <div class="contract-stats">
+        <div class="contract-stat total">
+          <mat-icon>people</mat-icon>
+
+          <div>
+            <span>Total de clientes</span>
+            <strong>{{ totalClients }}</strong>
+          </div>
+        </div>
+
+        <div class="contract-stat active">
+          <mat-icon>check_circle</mat-icon>
+
+          <div>
+            <span>Contratos ativos</span>
+            <strong>{{ activeContracts }}</strong>
+          </div>
+        </div>
+
+        <div class="contract-stat inactive">
+          <mat-icon>cancel</mat-icon>
+
+          <div>
+            <span>Contratos inativos</span>
+            <strong>{{ inactiveContracts }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <button mat-flat-button color="primary" type="button" (click)="newClient()">
+        <mat-icon>add</mat-icon>
+        Novo cliente
+      </button>
+    </div>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" matSort (matSortChange)="changeSortBy($event)">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
+          <td mat-cell *matCellDef="let client">
+            {{ client.name }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="documento">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>CPF/CNPJ</th>
+          <td mat-cell *matCellDef="let client">
+            {{ client.documento | cpfCnpj }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="birthDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nascimento</th>
+          <td mat-cell *matCellDef="let client">
+            {{ client.birthDate ? (client.birthDate | date: 'dd/MM/yyyy') : '—' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="contacts">
+          <th mat-header-cell *matHeaderCellDef>Contatos</th>
+          <td mat-cell *matCellDef="let client">
+            {{ client.contacts?.length ?? 0 }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="contracts">
+          <th mat-header-cell *matHeaderCellDef>Contratos</th>
+          <td mat-cell *matCellDef="let client">
+            {{ client.contracts?.length ?? 0 }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-column">Ações</th>
+
+          <td mat-cell *matCellDef="let client" class="actions-column">
+            <div class="actions">
+              <button
+                mat-icon-button
+                matTooltip="Visualizar"
+                type="button"
+                (click)="viewClient(client.id)"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+
+              <button
+                mat-icon-button
+                matTooltip="Editar"
+                type="button"
+                (click)="editClient(client.id)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+
+              <button
+                mat-icon-button
+                matTooltip="Excluir"
+                type="button"
+                (click)="deleteClient(client)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty" [attr.colspan]="displayedColumns.length">
+            Nenhum cliente encontrado.
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="pageConfig.totalElements"
+      [pageIndex]="pageConfig.page"
+      [pageSize]="pageConfig.pageSize"
+      [pageSizeOptions]="[5, 10, 25]"
+      showFirstLastButtons
+      (page)="onPageChange($event)"
+    />
+  </div>
+</div>

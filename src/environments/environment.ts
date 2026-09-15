@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api-supremenetwork.animal-adoption.com.br/api',
+  apiUrl: 'http://localhost:8084/api/v1',
+  viaCepApi: 'https://viacep.com.br/ws/',
   keycloakConfig: {
     url: 'https://auth.animal-adoption.com.br',
     realm: 'MY_KEYCLOAK',
