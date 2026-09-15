@@ -22,6 +22,10 @@ export abstract class BaseHttpService {
     return this.http.post<ApiResponseDTO<T>>(url, body);
   }
 
+  protected put<T>(url: string, id: string, body: unknown): Observable<ApiResponseDTO<T>> {
+    return this.http.put<ApiResponseDTO<T>>(`${url}/${id}`, body);
+  }
+
   protected remove<T>(url: string, id: string): Observable<ApiResponseDTO<T>> {
     return this.http.delete<ApiResponseDTO<T>>(`${url}/${id}`);
   }

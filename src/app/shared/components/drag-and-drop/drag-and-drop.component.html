@@ -1,0 +1,18 @@
+<header class="dialog-toolbar">
+  <button
+    mat-icon-button
+    type="button"
+    aria-label="Mover janela"
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane"
+    cdkDragHandle
+  >
+    <mat-icon>open_with</mat-icon>
+  </button>
+
+  <h3>{{ title() | titlecase }}</h3>
+
+  <button mat-icon-button type="button" aria-label="Fechar" (click)="closeDialog()">
+    <mat-icon>close</mat-icon>
+  </button>
+</header>

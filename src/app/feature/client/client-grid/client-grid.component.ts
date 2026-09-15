@@ -31,6 +31,8 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ClientPageResponse } from '../../../shared/dto/response/client-page-response.dto';
+import { NotificationService } from '../../../core/service/notification.service';
+import { ProductFilterComponent } from '../../product/product-filter/product-filter.component';
 
 @Component({
   imports: [
@@ -45,7 +47,7 @@ import { ClientPageResponse } from '../../../shared/dto/response/client-page-res
     MatTableModule,
     MatPaginatorModule,
     MatTooltipModule,
-    CpfCnpjPipe,
+    CpfCnpjPipe
   ],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -56,12 +58,13 @@ import { ClientPageResponse } from '../../../shared/dto/response/client-page-res
 export class ClientGridComponent implements OnInit, AfterViewInit {
   private readonly router = inject(Router);
   private readonly service = inject(ClientService);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
+  private readonly notificationService = inject(NotificationService);
+  
 
   displayedColumns = ['name', 'documento', 'birthDate', 'contacts', 'contracts', 'actions'];
   dataSource: ClientResponseDTO[] = [];
-  
+
   @ViewChild(MatSort, { static: true }) sort?: MatSort;
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
 
@@ -133,45 +136,10 @@ export class ClientGridComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/client/edit', id]);
   }
 
-  private showSuccess(message: string): void {
-    this.snackBar.open(message, 'Fechar', {
-      duration: 4000,
-      horizontalPosition: 'center',
-      verticalPosition: 'top',
-    });
-  }
-
-  private showError(error: HttpErrorResponse): void {
-    const response = error.error;
-
-    if (response?.data && Array.isArray(response.data)) {
-      const messages = response.data as string[];
-
-      const message =
-        messages.length === 1 ? messages[0] : messages.map((item) => `- ${item}`).join('\n');
-
-      this.snackBar.open(message, 'Fechar', {
-        duration: 6000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['warning-snackbar'],
-      });
-
-      return;
-    }
-
-    this.snackBar.open(response?.message ?? 'Ocorreu um erro ao realizar a operação.', 'Fechar', {
-      duration: 6000,
-      horizontalPosition: 'center',
-      verticalPosition: 'top',
-      panelClass: ['error-snackbar'],
-    });
-  }
-
-  deleteClient(client: ClientResponseDTO): void {
+  confirmaticonDeleteClient(id: string, name: string): void {
     const data: ConfirmDialogData = {
       title: 'Excluir cliente',
-      message: `Deseja realmente excluir o cliente "${client.name}"?`,
+      message: `Deseja realmente excluir o cliente "${name}"?`,
       confirmText: 'Excluir',
       cancelText: 'Cancelar',
       icon: 'delete',
@@ -186,16 +154,19 @@ export class ClientGridComponent implements OnInit, AfterViewInit {
       if (!confirmed) {
         return;
       }
+      this.deleteClient(id);
+    });
+  }
 
-      this.service.delete(client.id).subscribe({
-        next: (resp) => {
-          this.showSuccess(resp.message);
-          this.findAll();
-        },
-        error: (err: HttpErrorResponse) => {
-          this.showError(err);
-        },
-      });
+  deleteClient(id: string) {
+    this.service.delete(id).subscribe({
+      next: (resp) => {
+        this.notificationService.success(resp.message);
+        this.findAll();
+      },
+      error: (err: HttpErrorResponse) => {
+        this.notificationService.error(err);
+      },
     });
   }
 }

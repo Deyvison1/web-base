@@ -38,7 +38,7 @@ import { ContractResponseDTO } from '../../../shared/dto/response/contract-respo
 import { KeyValueResponseDTO } from '../../../shared/dto/response/key-value-response.dto';
 import { ProductService } from '../../../core/service/product.service';
 import { map, Observable } from 'rxjs';
-import { ProductResponseDTO } from '../../../shared/dto/response/product-response.dto';
+import { NotificationService } from '../../../core/service/notification.service';
 
 type ContactFormGroup = FormGroup<{
   value: FormControl<string>;
@@ -89,7 +89,7 @@ export class ClientFormComponent implements OnInit {
   private readonly fb: FormBuilder = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly productService = inject(ProductService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
   private readonly service = inject(ClientService);
   readonly pathToBack: string = 'client';
   title: string = 'Cadastro de Cliente';
@@ -236,11 +236,7 @@ export class ClientFormComponent implements OnInit {
 
     this.contacts.at(index).controls['primaryContact'].setValue(false);
 
-    this.snackBar.open('Só é possível marcar um contato como principal.', 'Fechar', {
-      duration: 4000,
-      horizontalPosition: 'center',
-      verticalPosition: 'top',
-    });
+    this.notificationService.warning('Só é possível marcar um contato como principal.');
   }
 
   adicionarContato(): void {
@@ -281,39 +277,12 @@ export class ClientFormComponent implements OnInit {
         const clientResponse: ClientResponseDTO = resp.data;
         this.setValueForm(clientResponse);
         this.title = 'Atualizar client ' + clientResponse.name;
-        this.showSuccess(resp.message);
+        this.notificationService.success(resp.message);
       },
 
       error: (err: HttpErrorResponse) => {
-        this.showError(err);
+        this.notificationService.error(err);
       },
-    });
-  }
-
-  private showError(error: HttpErrorResponse): void {
-    const response = error.error;
-
-    if (response?.data && Array.isArray(response.data)) {
-      const messages = response.data as string[];
-
-      const message =
-        messages.length === 1 ? messages[0] : messages.map((item) => `- ${item}`).join('\n');
-
-      this.snackBar.open(message, 'Fechar', {
-        duration: 6000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top',
-        panelClass: ['warning-snackbar'],
-      });
-
-      return;
-    }
-
-    this.snackBar.open(response?.message ?? 'Ocorreu um erro ao realizar a operação.', 'Fechar', {
-      duration: 6000,
-      horizontalPosition: 'center',
-      verticalPosition: 'top',
-      panelClass: ['error-snackbar'],
     });
   }
 
@@ -401,13 +370,5 @@ export class ClientFormComponent implements OnInit {
 
       this.contacts.push(formContato);
     }
-  }
-
-  private showSuccess(message: string): void {
-    this.snackBar.open(message, 'Fechar', {
-      duration: 4000,
-      horizontalPosition: 'center',
-      verticalPosition: 'top',
-    });
   }
 }

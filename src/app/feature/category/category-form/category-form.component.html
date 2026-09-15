@@ -1,0 +1,59 @@
+```html
+<div class="page-container">
+  <app-page-header
+    [titleInput]="id ? 'Atualizar Categoria' : 'Cadastro de Categoria'"
+    [pathToBack]="'category'"
+    [isGrid]="false"
+  />
+
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="content-card">
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome</mat-label>
+
+          <input
+            matInput
+            type="text"
+            formControlName="name"
+            placeholder="Nome da categoria"
+            autocomplete="off"
+          />
+
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+            <mat-error>
+              <app-form-error [control]="form.controls.name" />
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="description-field">
+          <mat-label>Descrição</mat-label>
+
+          <textarea
+            matInput
+            formControlName="description"
+            placeholder="Descrição da categoria"
+            rows="5"
+          ></textarea>
+
+          @if (form.controls.description.touched && form.controls.description.invalid) {
+            <mat-error>
+              <app-form-error [control]="form.controls.description" />
+            </mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button mat-stroked-button type="button" [routerLink]="'/category'">Cancelar</button>
+
+      <button mat-raised-button type="submit">
+        <mat-icon>save</mat-icon>
+        {{ id ? 'Atualizar' : 'Salvar' }}
+      </button>
+    </div>
+  </form>
+</div>
+```

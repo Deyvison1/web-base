@@ -1,0 +1,174 @@
+<div class="page-container">
+  <form [formGroup]="form" (ngSubmit)="search()">
+    <div class="content-card">
+      <div class="filter-header">
+        <div class="filter-title">
+          <div class="title-line">
+            <mat-icon>filter_list</mat-icon>
+            <h3>Filtros de produtos</h3>
+          </div>
+
+          <p>Informe os dados que deseja utilizar para localizar os produtos.</p>
+        </div>
+
+        <div class="filter-actions">
+          <button mat-stroked-button type="button" (click)="clear()">
+            <mat-icon>backspace</mat-icon>
+            Limpar filtros
+          </button>
+
+          <button mat-raised-button type="submit">
+            <mat-icon>search</mat-icon>
+            Pesquisar
+          </button>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome</mat-label>
+
+          <input
+            matInput
+            type="text"
+            formControlName="name"
+            placeholder="Informe o nome"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Descrição</mat-label>
+
+          <input
+            matInput
+            type="text"
+            formControlName="description"
+            placeholder="Informe a descrição"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Data de criação</mat-label>
+
+          <input matInput [matDatepicker]="picker" formControlName="creationDate" />
+
+          <mat-datepicker-toggle matIconSuffix [for]="picker">
+            <mat-icon matDatepickerToggleIcon> calendar_month </mat-icon>
+          </mat-datepicker-toggle>
+
+          <mat-datepicker #picker />
+        </mat-form-field>
+      </div>
+
+      <mat-expansion-panel class="advanced-filters">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon style="margin-right: 10px">tune</mat-icon>
+            Filtros avançados
+          </mat-panel-title>
+
+          <mat-panel-description> Velocidade, categoria e valores </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Velocidade de download</mat-label>
+
+            <input
+              matInput
+              type="number"
+              min="0"
+              formControlName="speedDownload"
+              placeholder="Mbps"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Velocidade de upload</mat-label>
+
+            <input
+              matInput
+              type="number"
+              min="0"
+              formControlName="speedUpload"
+              placeholder="Mbps"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Categoria</mat-label>
+
+            <mat-select formControlName="categoryId">
+              <mat-option [value]="null"> Todas as categorias </mat-option>
+
+              @for (category of categories; track category.key) {
+                <mat-option [value]="category.key">
+                  {{ category.value }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Taxa de adesão</mat-label>
+
+            <input
+              matInput
+              type="text"
+              inputmode="decimal"
+              formControlName="taxaAdesao"
+              placeholder="R$ 0,00"
+              currencyMask
+              [currencyMask]="{
+                prefix: 'R$ ',
+                thousands: '.',
+                decimal: ',',
+                precision: 2,
+              }"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Valor Wi-Fi</mat-label>
+
+            <input
+              matInput
+              type="text"
+              inputmode="decimal"
+              formControlName="valueWifi"
+              placeholder="R$ 0,00"
+              currencyMask
+              [currencyMask]="{
+                prefix: 'R$ ',
+                thousands: '.',
+                decimal: ',',
+                precision: 2,
+              }"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Valor do produto</mat-label>
+
+            <input
+              matInput
+              type="text"
+              inputmode="decimal"
+              formControlName="value"
+              placeholder="R$ 0,00"
+              currencyMask
+              [currencyMask]="{
+                prefix: 'R$ ',
+                thousands: '.',
+                decimal: ',',
+                precision: 2,
+              }"
+            />
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+    </div>
+  </form>
+</div>

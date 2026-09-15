@@ -4,7 +4,7 @@
       <span>Contrato {{ index + 1 }}</span>
 
       @if (form.controls['active'].value) {
-        <span class="active-badge"> Ativo </span>
+        <span class="active-badge">Ativo</span>
       }
     </div>
 
@@ -13,7 +13,7 @@
       type="button"
       color="warn"
       aria-label="Remover contrato"
-      title="Remover contrato"
+      matTooltip="Remover contrato"
       (click)="remover()"
     >
       <mat-icon>delete</mat-icon>
@@ -21,10 +21,8 @@
   </div>
 
   <div [formGroup]="form" class="form">
-    <!-- Dados do contrato -->
     <div class="contract-data">
       <div class="form-grid">
-        <!-- Produto -->
         <mat-form-field appearance="outline" class="product-field">
           <mat-label>Produto</mat-label>
 
@@ -52,7 +50,6 @@
           }
         </mat-form-field>
 
-        <!-- Valor do contrato -->
         <mat-form-field appearance="outline">
           <mat-label>Valor do contrato</mat-label>
 
@@ -76,7 +73,6 @@
           }
         </mat-form-field>
 
-        <!-- Data de início -->
         <mat-form-field appearance="outline">
           <mat-label>Data de início</mat-label>
 
@@ -98,7 +94,6 @@
           }
         </mat-form-field>
 
-        <!-- Data de término -->
         <mat-form-field appearance="outline">
           <mat-label>Data de término</mat-label>
 
@@ -110,7 +105,6 @@
         </mat-form-field>
       </div>
 
-      <!-- Resumo do produto -->
       @if (selectedProduct) {
         <div class="product-summary">
           <div class="product-summary-header">
@@ -128,9 +122,9 @@
               </div>
             </div>
 
-            @if (selectedProduct.category?.name) {
+            @if (selectedCategoryName) {
               <span class="category-badge">
-                {{ selectedProduct.category.name }}
+                {{ selectedCategoryName }}
               </span>
             }
           </div>
@@ -168,9 +162,9 @@
       </div>
     </div>
 
-    <!-- Endereço -->
     <div class="section-header address-header">
       <mat-icon>location_on</mat-icon>
+
       <div>
         <h3>Endereço do contrato</h3>
         <p>Informe o endereço onde o serviço será instalado.</p>

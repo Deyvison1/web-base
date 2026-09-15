@@ -29,4 +29,49 @@ export const routes: Routes = [
         (r) => r.ClientViewComponent,
       ),
   },
+  {
+    path: 'product',
+    loadComponent: () =>
+      import('./feature/product/product-grid/product-grid.component').then(
+        (r) => r.ProductGridComponent,
+      ),
+  },
+  {
+    path: 'product/add',
+    loadComponent: () =>
+      import('./feature/product/product-form/product-form.component').then(
+        (r) => r.ProductFormComponent,
+      ),
+  },
+
+  {
+    path: 'product/edit/:id',
+    loadComponent: () =>
+      import('./feature/product/product-form/product-form.component').then(
+        (r) => r.ProductFormComponent,
+      ),
+  },
+
+  {
+    path: 'category',
+    loadComponent: () =>
+      import('./feature/category/category-grid/category-grid.component').then(
+        (r) => r.CategoryGridComponent,
+      ),
+  },
+  {
+    path: 'category/add',
+    loadComponent: () =>
+      import('./feature/category/category-form/category-form.component').then(
+        (r) => r.CategoryFormComponent,
+      ),
+  },
+
+  {
+    path: 'category/edit/:id',
+    loadComponent: () =>
+      import('./feature/category/category-form/category-form.component').then(
+        (r) => r.CategoryFormComponent,
+      ),
+  },
 ];

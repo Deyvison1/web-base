@@ -1,0 +1,192 @@
+<div class="page-container">
+  <app-page-header
+    [titleInput]="isEdit ? 'Atualizar Produto' : 'Cadastro de Produto'"
+    [pathToBack]="'product'"
+    [isGrid]="false"
+  />
+
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="tab-content">
+      <div class="content-card">
+        <div class="form-row">
+          <div class="product-main-fields">
+            <mat-form-field appearance="outline">
+              <mat-label>Nome</mat-label>
+
+              <input
+                matInput
+                type="text"
+                placeholder="Digite o nome"
+                autocomplete="off"
+                formControlName="name"
+              />
+
+              @if (form.controls.name.touched && form.controls.name.invalid) {
+                <mat-error>
+                  <app-form-error [control]="form.controls.name" />
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Velocidade de download</mat-label>
+
+              <input
+                matInput
+                type="number"
+                min="0"
+                placeholder="Mbps"
+                formControlName="speedDownload"
+              />
+
+              @if (form.controls.speedDownload.touched && form.controls.speedDownload.invalid) {
+                <mat-error>
+                  <app-form-error [control]="form.controls.speedDownload" />
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Velocidade de upload</mat-label>
+
+              <input
+                matInput
+                type="number"
+                min="0"
+                placeholder="Mbps"
+                formControlName="speedUpload"
+              />
+
+              @if (form.controls.speedUpload.touched && form.controls.speedUpload.invalid) {
+                <mat-error>
+                  <app-form-error [control]="form.controls.speedUpload" />
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="value-field">
+            <mat-label>Taxa de adesão</mat-label>
+
+            <input
+              matInput
+              type="text"
+              inputmode="decimal"
+              placeholder="R$ 0,00"
+              formControlName="taxaAdesao"
+              currencyMask
+              [currencyMask]="{
+                prefix: 'R$ ',
+                thousands: '.',
+                decimal: ',',
+                precision: 2,
+              }"
+            />
+
+            @if (form.controls.taxaAdesao.touched && form.controls.taxaAdesao.invalid) {
+              <mat-error>
+                <app-form-error [control]="form.controls.taxaAdesao" />
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="value-field">
+            <mat-label>Valor Wi-Fi</mat-label>
+
+            <input
+              matInput
+              type="text"
+              inputmode="decimal"
+              placeholder="R$ 0,00"
+              formControlName="valueWifi"
+              currencyMask
+              [currencyMask]="{
+                prefix: 'R$ ',
+                thousands: '.',
+                decimal: ',',
+                precision: 2,
+              }"
+            />
+
+            @if (form.controls.valueWifi.touched && form.controls.valueWifi.invalid) {
+              <mat-error>
+                <app-form-error [control]="form.controls.valueWifi" />
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="value-field">
+            <mat-label>Valor</mat-label>
+
+            <input
+              matInput
+              type="text"
+              inputmode="decimal"
+              placeholder="R$ 0,00"
+              formControlName="value"
+              currencyMask
+              [currencyMask]="{
+                prefix: 'R$ ',
+                thousands: '.',
+                decimal: ',',
+                precision: 2,
+              }"
+            />
+
+            @if (form.controls.value.touched && form.controls.value.invalid) {
+              <mat-error>
+                <app-form-error [control]="form.controls.value" />
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="category-field">
+            <mat-label>Categoria</mat-label>
+
+            <mat-select formControlName="categoryId">
+              <mat-option [value]="null" disabled> Selecione uma categoria </mat-option>
+
+              @for (category of categories; track category.key) {
+                <mat-option [value]="category.key">
+                  {{ category.value }}
+                </mat-option>
+              }
+            </mat-select>
+
+            @if (form.controls.categoryId.touched && form.controls.categoryId.invalid) {
+              <mat-error>
+                <app-form-error [control]="form.controls.categoryId" />
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="observacoes-field">
+            <mat-label>Descrição</mat-label>
+
+            <textarea
+              matInput
+              rows="5"
+              placeholder="Digite uma descrição..."
+              formControlName="description"
+            ></textarea>
+
+            @if (form.controls.description.touched && form.controls.description.invalid) {
+              <mat-error>
+                <app-form-error [control]="form.controls.description" />
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button mat-stroked-button type="button" [routerLink]="'/product'">Cancelar</button>
+
+      <button mat-raised-button type="submit">
+        <mat-icon>save</mat-icon>
+        {{ isEdit ? 'Atualizar' : 'Salvar' }}
+      </button>
+    </div>
+  </form>
+</div>

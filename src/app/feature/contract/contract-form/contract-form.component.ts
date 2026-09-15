@@ -23,7 +23,10 @@ import { KeyValueResponseDTO } from '../../../shared/dto/response/key-value-resp
 import { ufsConstant } from '../../../core/constants/ufs.constant';
 import { FormErrorComponent } from '../../../shared/components/form-error/form-error.component';
 import { ClientResponseDTO } from '../../../shared/dto/response/client-response.dto';
-import { ProductResponseDTO } from '../../../shared/dto/response/product-response.dto';
+import {
+  ProductResponseDTO,
+  ProductSimpleResponseDTO,
+} from '../../../shared/dto/response/product-response.dto';
 import { ProductService } from '../../../core/service/product.service';
 import { ApiResponseDTO } from '../../../shared/dto/response/api-response.dto';
 import { NgxCurrency } from '@dintecom/ngx-currency';
@@ -73,7 +76,19 @@ export class ContractFormComponent implements OnInit {
 
   readonly ufs: string[] = ufsConstant;
 
-  selectedProduct?: ProductResponseDTO;
+  selectedProduct?: ProductResponseDTO | ProductSimpleResponseDTO;
+
+  get selectedCategoryName(): string | undefined {
+    if (!this.selectedProduct) {
+      return undefined;
+    }
+
+    if ('category' in this.selectedProduct) {
+      return this.selectedProduct.category?.name;
+    }
+
+    return undefined;
+  }
 
   private readonly productService = inject(ProductService);
 
@@ -115,7 +130,7 @@ export class ContractFormComponent implements OnInit {
 
   private loadProduct(productId: string): void {
     this.productService.getById(productId).subscribe({
-      next: (resp: ApiResponseDTO<ProductResponseDTO>) => {
+      next: (resp: ApiResponseDTO<ProductSimpleResponseDTO>) => {
         this.selectedProduct = resp.data;
       },
       error: (err) => {

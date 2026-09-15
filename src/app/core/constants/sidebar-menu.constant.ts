@@ -11,19 +11,19 @@ export const SIDEBAR_MENU: SidebarItem[] = [
     route: '/',
   },
   {
+    label: 'Produtos',
+    icon: 'add_shopping_cart',
+    route: '/product',
+  },
+  {
+    label: 'Categorias',
+    icon: 'category',
+    route: '/category',
+  },
+  {
     label: 'Clientes',
     icon: 'person',
     route: '/client',
-  },
-  {
-    label: 'Serviços Contratados',
-    icon: 'miscellaneous_services',
-    route: '/servicos',
-  },
-  {
-    label: 'Faturas',
-    icon: 'receipt_long',
-    route: '/faturas',
   },
   {
     label: 'Nota Fiscal',
