@@ -6,11 +6,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
-import { FormErrorComponent } from '../form-error/form-error.component';
+import { FormError } from '@supremenetwork/ui';
 import { ufsConstant } from '../../../core/constants/ufs.constant';
 import { ViaCepService } from '../../../core/service/via-cep.service';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
 import { CepDirective } from '../../directives/cep.directive';
+import { NotificationService } from '../../../core/service/notification.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-address-form',
@@ -21,19 +23,20 @@ import { CepDirective } from '../../directives/cep.directive';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    FormErrorComponent,
-    CepDirective
+    FormError,
+    CepDirective,
   ],
   templateUrl: './address-form.component.html',
   styleUrl: './address-form.component.scss',
 })
 export class AddressFormComponent {
+  private readonly viaCepService = inject(ViaCepService);
+  private readonly notificationService = inject(NotificationService);
+
   @Input({ required: true })
   form!: FormGroup;
 
   readonly ufs = ufsConstant;
-
-  private readonly viaCepService = inject(ViaCepService);
 
   ngOnInit(): void {
     this.form.controls['cep'].valueChanges
@@ -62,8 +65,8 @@ export class AddressFormComponent {
           uf: endereco.uf,
         });
       },
-      error: (err) => {
-        console.error('Erro ao consultar CEP:', err);
+      error: (err: HttpErrorResponse) => {
+        this.notificationService.error(err);
       },
     });
   }

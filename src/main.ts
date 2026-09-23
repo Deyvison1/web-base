@@ -1,13 +1,10 @@
-import { bootstrapApplication } from '@angular/platform-browser';
+import '@angular/compiler';
 
-import { appConfig } from './app/app.config';
+import { initFederation } from '@angular-architects/native-federation';
 
-import localePt from '@angular/common/locales/pt';
-
-import { registerLocaleData } from '@angular/common';
-
-import { App } from './app/app';
-
-registerLocaleData(localePt);
-bootstrapApplication(App, appConfig)
-  .catch(err => console.error(err));
+initFederation({
+  'keycloak-user-mf': 'http://localhost:4201/remoteEntry.json',
+})
+  .catch((err) => console.error(err))
+  .then(() => import('./bootstrap'))
+  .catch((err) => console.error(err));

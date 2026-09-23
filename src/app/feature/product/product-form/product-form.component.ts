@@ -16,8 +16,7 @@ import { NgxCurrency } from '@dintecom/ngx-currency';
 import { CategoryService } from '../../../core/service/category.service';
 import { ProductService } from '../../../core/service/product.service';
 
-import { FormErrorComponent } from '../../../shared/components/form-error/form-error.component';
-import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { PageHeader, FormError } from '@supremenetwork/ui';
 
 import { ApiResponseDTO } from '../../../shared/dto/response/api-response.dto';
 import { KeyValueResponseDTO } from '../../../shared/dto/response/key-value-response.dto';
@@ -38,8 +37,8 @@ import { NotificationService } from '../../../core/service/notification.service'
     MatInputModule,
     MatSelectModule,
     NgxCurrency,
-    FormErrorComponent,
-    PageHeaderComponent,
+    FormError,
+    PageHeader,
     RouterLink,
   ],
   templateUrl: './product-form.component.html',
@@ -47,7 +46,6 @@ import { NotificationService } from '../../../core/service/notification.service'
 })
 export class ProductFormComponent implements OnInit {
   readonly title = 'Produto';
-
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly categoryService = inject(CategoryService);
@@ -89,7 +87,7 @@ export class ProductFormComponent implements OnInit {
         this.setProductForm(response.data);
       },
       error: (error: HttpErrorResponse) => {
-        console.error('Erro ao carregar produto:', error);
+        this.notificationService.error(error);
       },
     });
   }

@@ -28,7 +28,7 @@ export class CategoryService extends BaseHttpService {
       description: filters?.description,
     });
 
-    return this.http.get<PageResponseDTO<CategoryResponseDTO[]>>(this.urlApiCategory, { params });
+    return this.getPageFindAll<CategoryResponseDTO[]>(this.urlApiCategory, params);
   }
 
   getAllCategory(): Observable<ApiResponseDTO<KeyValueResponseDTO[]>> {

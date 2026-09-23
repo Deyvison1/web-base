@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { loadRemoteModule } from '@angular-architects/native-federation';
 
 export const routes: Routes = [
   {
@@ -73,5 +74,16 @@ export const routes: Routes = [
       import('./feature/category/category-form/category-form.component').then(
         (r) => r.CategoryFormComponent,
       ),
+  },
+
+  {
+    path: 'forbidden',
+    loadComponent: () =>
+      import('./shared/components/forbidden/forbidden.component').then((r) => r.ForbiddenComponent),
+  },
+
+  {
+    path: 'user',
+    loadChildren: () => loadRemoteModule('keycloak-user-mf', './Routes').then((m) => m.routes),
   },
 ];

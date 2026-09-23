@@ -174,7 +174,7 @@
     <div class="form-actions">
       <button mat-stroked-button type="button" routerLink="/client">Cancelar</button>
 
-      <button mat-raised-button type="submit">
+      <button mat-raised-button type="submit" *appHasRole="roles">
         <mat-icon>save</mat-icon>
         Salvar cliente
       </button>

@@ -9,24 +9,25 @@ import { CategoryRequestDTO } from '../../../shared/dto/request/category-request
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatError, MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 
-import { FormErrorComponent } from '../../../shared/components/form-error/form-error.component';
-import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { PageHeader, FormError } from '@supremenetwork/ui';
 import { ApiResponseDTO } from '../../../shared/dto/response/api-response.dto';
 import { CategoryResponseDTO } from '../../../shared/dto/response/category-response.dto';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { NotificationService } from '../../../core/service/notification.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   imports: [
     ReactiveFormsModule,
     RouterLink,
     MatIcon,
-    FormErrorComponent,
+    FormError,
     MatError,
     MatFormField,
     MatLabel,
-    PageHeaderComponent,
+    PageHeader,
     CommonModule,
     MatButtonModule,
     MatFormFieldModule,
@@ -41,6 +42,7 @@ export class CategoryFormComponent implements OnInit {
   private readonly categoryService = inject(CategoryService);
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
+  private readonly notificationService = inject(NotificationService);
 
   form = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
@@ -59,21 +61,6 @@ export class CategoryFormComponent implements OnInit {
     }
   }
 
-  private loadCategory(id: string): void {
-    this.categoryService.findByIdComplet(id).subscribe({
-      next: (resp: ApiResponseDTO<CategoryResponseDTO>) => {
-        const category = resp.data;
-        this.form.patchValue({
-          name: category.name,
-          description: category.description,
-        });
-      },
-      error: (error) => {
-        console.error('Erro ao carregar categoria:', error);
-      },
-    });
-  }
-
   save(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -90,24 +77,39 @@ export class CategoryFormComponent implements OnInit {
     this.insert(request);
   }
 
+  private loadCategory(id: string): void {
+    this.categoryService.findByIdComplet(id).subscribe({
+      next: (resp: ApiResponseDTO<CategoryResponseDTO>) => {
+        const category = resp.data;
+        this.form.patchValue({
+          name: category.name,
+          description: category.description,
+        });
+      },
+      error: (error: HttpErrorResponse) => {
+        this.notificationService.error(error);
+      },
+    });
+  }
+
   private insert(request: CategoryRequestDTO): void {
     this.categoryService.insertCategory(request).subscribe({
-      next: () => {
-        // sucesso
+      next: (resp: ApiResponseDTO<CategoryResponseDTO>) => {
+        this.notificationService.success(resp.message);
       },
-      error: (error) => {
-        console.error('Erro ao cadastrar categoria:', error);
+      error: (error: HttpErrorResponse) => {
+        this.notificationService.error(error);
       },
     });
   }
 
   private update(id: string, request: CategoryRequestDTO): void {
     this.categoryService.editCategory(id, request).subscribe({
-      next: () => {
-        // sucesso
+      next: (resp: ApiResponseDTO<CategoryResponseDTO>) => {
+        this.notificationService.success(resp.message);
       },
-      error: (error) => {
-        console.error('Erro ao atualizar categoria:', error);
+      error: (error: HttpErrorResponse) => {
+        this.notificationService.error(error);
       },
     });
   }

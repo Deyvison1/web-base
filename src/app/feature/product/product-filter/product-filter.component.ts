@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, output, signal } from '@angular/core';
+import { Component, inject, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -15,10 +15,10 @@ import { CategoryService } from '../../../core/service/category.service';
 
 import { KeyValueResponseDTO } from '../../../shared/dto/response/key-value-response.dto';
 import { ProductFilterDTO } from '../../../shared/dto/request/product-filter.dto';
-import { RouterLink } from '@angular/router';
-import { MatDatepicker, MatDatepickerInput, MatDatepickerModule } from '@angular/material/datepicker';
-import { FormErrorComponent } from '../../../shared/components/form-error/form-error.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { NotificationService } from '../../../core/service/notification.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-product-filter',
@@ -35,17 +35,16 @@ import { provideNativeDateAdapter } from '@angular/material/core';
     MatSelectModule,
     NgxCurrency,
     MatDatepickerModule,
-],
+  ],
   templateUrl: './product-filter.component.html',
   styleUrl: './product-filter.component.scss',
 })
-export class ProductFilterComponent {
+export class ProductFilterComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly categoryService = inject(CategoryService);
-
+  private readonly notificationService = inject(NotificationService);
   readonly searchEvent = output<ProductFilterDTO>();
   readonly clearEvent = output<void>();
-
   readonly panelOpenState = signal(false);
 
   categories: KeyValueResponseDTO[] = [];
@@ -62,19 +61,8 @@ export class ProductFilterComponent {
     creationDate: this.fb.control<string | null>(null),
   });
 
-  constructor() {
+  ngOnInit() {
     this.loadCategories();
-  }
-
-  private loadCategories(): void {
-    this.categoryService.getAllCategory().subscribe({
-      next: (response) => {
-        this.categories = response.data ?? [];
-      },
-      error: (error) => {
-        console.error('Erro ao carregar categorias:', error);
-      },
-    });
   }
 
   search(): void {
@@ -95,5 +83,16 @@ export class ProductFilterComponent {
     });
 
     this.clearEvent.emit();
+  }
+
+  private loadCategories(): void {
+    this.categoryService.getAllCategory().subscribe({
+      next: (response) => {
+        this.categories = response.data ?? [];
+      },
+      error: (error: HttpErrorResponse) => {
+        this.notificationService.error(error);
+      },
+    });
   }
 }

@@ -26,9 +26,9 @@ export const SIDEBAR_MENU: SidebarItem[] = [
     route: '/client',
   },
   {
-    label: 'Nota Fiscal',
-    icon: 'description',
-    route: '/nota-fiscal',
+    label: 'Usuarios',
+    icon: 'person',
+    route: '/user/grid',
   },
   {
     label: 'Atendimentos',

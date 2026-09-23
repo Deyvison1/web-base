@@ -1,31 +1,24 @@
-import { CurrencyPipe, DatePipe, JsonPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  inject,
-  NgZone,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { PageHeader } from '@supremenetwork/ui';
+
 import { ClientResponseDTO } from '../../../shared/dto/response/client-response.dto';
-import { ApiResponseDTO } from '../../../shared/dto/response/api-response.dto';
 import { ClientService } from '../../../core/service/client.service';
 import { CpfCnpjPipe } from '../../../shared/pipe/cpf-cnpj.pipe';
 import { ContactPipe } from '../../../shared/pipe/contact.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../../core/service/notification.service';
 
 @Component({
   imports: [
     DatePipe,
-    PageHeaderComponent,
+    PageHeader,
     CpfCnpjPipe,
     MatButtonModule,
     CurrencyPipe,
@@ -41,9 +34,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class ClientViewComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly notificationService = inject(NotificationService);
+
   private readonly router = inject(Router);
   private readonly service = inject(ClientService);
-  private readonly cdr = inject(ChangeDetectorRef);
   private readonly snackBar = inject(MatSnackBar);
 
   client!: ClientResponseDTO;
@@ -73,8 +67,8 @@ export class ClientViewComponent implements OnInit {
       next: (resp) => {
         this.client = resp.data;
       },
-      error: (err) => {
-        console.error(err);
+      error: (err: HttpErrorResponse) => {
+        this.notificationService.error(err);
       },
     });
   }

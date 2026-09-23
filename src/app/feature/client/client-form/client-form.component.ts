@@ -10,22 +10,21 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { PageHeader, FormError } from '@supremenetwork/ui';
+
+
 import { MatIconModule } from '@angular/material/icon';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CpfCnpjDirective } from '../../../shared/directives/cpf-cnpj.directive';
 import { nameValidator } from '../../../shared/validators/name.validator';
 import { dateBeforeTodayValidator } from '../../../shared/validators/date-before-today.validator';
-import { FormErrorComponent } from '../../../shared/components/form-error/form-error.component';
 import { documentValidator } from '../../../shared/validators/document.validator';
 import { ContactFormComponent } from '../../../shared/components/contact-form/contact-form.component';
 import { contactValidator } from '../../../shared/validators/contact.validator';
 import { onlyOnePrimaryValidator } from '../../../shared/validators/only-one-primary.validator';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatDialog } from '@angular/material/dialog';
 import { ClientService } from '../../../core/service/client.service';
 import { ClientRequestDTO } from '../../../shared/dto/request/client-request.dto';
 import { ApiResponseDTO } from '../../../shared/dto/response/api-response.dto';
@@ -39,6 +38,7 @@ import { KeyValueResponseDTO } from '../../../shared/dto/response/key-value-resp
 import { ProductService } from '../../../core/service/product.service';
 import { map, Observable } from 'rxjs';
 import { NotificationService } from '../../../core/service/notification.service';
+import { HasRoleDirective } from '../../../shared/directives/has-role.directive';
 
 type ContactFormGroup = FormGroup<{
   value: FormControl<string>;
@@ -67,17 +67,18 @@ export type ContractFormGroup = FormGroup<{
     MatInputModule,
     MatButtonModule,
     MatFormFieldModule,
-    PageHeaderComponent,
+    PageHeader,
     MatDatepickerModule,
     MatIconModule,
     CpfCnpjDirective,
     ReactiveFormsModule,
-    FormErrorComponent,
+    FormError,
     ContactFormComponent,
     RouterLink,
     MatTabsModule,
     ContractFormComponent,
-  ],
+    HasRoleDirective
+],
   providers: [provideNativeDateAdapter()],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -87,15 +88,17 @@ export type ContractFormGroup = FormGroup<{
 })
 export class ClientFormComponent implements OnInit {
   private readonly fb: FormBuilder = inject(FormBuilder);
-  private readonly route = inject(ActivatedRoute);
-  private readonly productService = inject(ProductService);
-  private readonly notificationService = inject(NotificationService);
-  private readonly service = inject(ClientService);
+  private readonly route: ActivatedRoute = inject(ActivatedRoute);
+  private readonly productService: ProductService = inject(ProductService);
+  private readonly notificationService: NotificationService = inject(NotificationService);
+  private readonly service: ClientService = inject(ClientService);
   readonly pathToBack: string = 'client';
-  title: string = 'Cadastro de Cliente';
-  id?: string;
-  products: KeyValueResponseDTO[] = [];
+  readonly roles: string[] = ['ADMIN_MASTER'];
 
+  id?: string;
+  title: string = 'Cadastro de Cliente';
+
+  products: KeyValueResponseDTO[] = [];
   form = this.fb.nonNullable.group({
     documento: ['', [Validators.required, documentValidator()]],
     name: ['', [Validators.required]],
@@ -106,7 +109,6 @@ export class ClientFormComponent implements OnInit {
     }),
     contracts: this.fb.array<ContractFormGroup>([]),
   });
-
   clientResponse?: ClientResponseDTO;
 
   get contacts(): FormArray<FormGroup> {
@@ -129,81 +131,14 @@ export class ClientFormComponent implements OnInit {
       next: (products) => {
         this.products = products;
 
-        // Edição
         if (this.id) {
           this.loadClient(this.id);
           return;
         }
       },
-      error: (err) => {
-        console.error(err);
-      },
-    });
-  }
-  private criarFormContrato(): ContractFormGroup {
-    return this.fb.group({
-      productId: this.fb.nonNullable.control('', [Validators.required]),
-
-      address: this.fb.group({
-        cep: this.fb.nonNullable.control('', [Validators.required]),
-        logradouro: this.fb.nonNullable.control(''),
-        complemento: this.fb.nonNullable.control(''),
-        bairro: this.fb.nonNullable.control('', [Validators.required]),
-        localidade: this.fb.nonNullable.control('', [Validators.required]),
-        uf: this.fb.nonNullable.control('', [Validators.required]),
-      }),
-
-      value: this.fb.control<number | null>(null, Validators.required),
-
-      startDate: this.fb.control<Date | null>(null, Validators.required),
-
-      endDate: this.fb.control<Date | null>(null),
-
-      active: this.fb.nonNullable.control(true),
-    });
-  }
-
-  private loadClient(id: string) {
-    this.service.getById(id).subscribe({
-      next: (resp: ApiResponseDTO<ClientResponseDTO>) => {
-        this.setValueForm(resp.data);
-        this.clientResponse = resp.data;
-      },
       error: (err: HttpErrorResponse) => {
-        console.log(err);
+        this.notificationService.error(err);
       },
-    });
-  }
-
-  private updateValidationName(): void {
-    const nameControl = this.form.controls.name;
-
-    if (this.isCpf()) {
-      nameControl.setValidators([Validators.required, nameValidator]);
-    } else {
-      nameControl.setValidators([Validators.required]);
-    }
-
-    nameControl.updateValueAndValidity({ emitEvent: false });
-  }
-
-  private updateValidationBirthDate(): void {
-    const birthDateControl = this.form.controls.birthDate;
-
-    if (this.isCpf()) {
-      birthDateControl.setValidators([Validators.required, dateBeforeTodayValidator()]);
-    } else {
-      birthDateControl.removeValidators([Validators.required, dateBeforeTodayValidator()]);
-    }
-
-    birthDateControl.updateValueAndValidity({ emitEvent: false });
-  }
-
-  private criarFormContato(): FormGroup {
-    return this.fb.group({
-      whatsapp: [false, Validators.required],
-      primaryContact: [false, Validators.required],
-      value: ['', [Validators.required, contactValidator]],
     });
   }
 
@@ -269,8 +204,6 @@ export class ClientFormComponent implements OnInit {
       birthDate: formatLocalDate(value.birthDate),
       contracts: [],
     };
-    console.log(this.form.valid);
-    return;
 
     this.service.add(client).subscribe({
       next: (resp: ApiResponseDTO<ClientResponseDTO>) => {
@@ -294,6 +227,73 @@ export class ClientFormComponent implements OnInit {
     if (this.contracts.length === 0) {
       this.contracts.push(this.criarFormContrato());
     }
+  }
+
+  private criarFormContrato(): ContractFormGroup {
+    return this.fb.group({
+      productId: this.fb.nonNullable.control('', [Validators.required]),
+
+      address: this.fb.group({
+        cep: this.fb.nonNullable.control('', [Validators.required]),
+        logradouro: this.fb.nonNullable.control(''),
+        complemento: this.fb.nonNullable.control(''),
+        bairro: this.fb.nonNullable.control('', [Validators.required]),
+        localidade: this.fb.nonNullable.control('', [Validators.required]),
+        uf: this.fb.nonNullable.control('', [Validators.required]),
+      }),
+
+      value: this.fb.control<number | null>(null, Validators.required),
+
+      startDate: this.fb.control<Date | null>(null, Validators.required),
+
+      endDate: this.fb.control<Date | null>(null),
+
+      active: this.fb.nonNullable.control(true),
+    });
+  }
+
+  private loadClient(id: string) {
+    this.service.getById(id).subscribe({
+      next: (resp: ApiResponseDTO<ClientResponseDTO>) => {
+        this.setValueForm(resp.data);
+        this.clientResponse = resp.data;
+      },
+      error: (err: HttpErrorResponse) => {
+        this.notificationService.error(err);
+      },
+    });
+  }
+
+  private updateValidationName(): void {
+    const nameControl = this.form.controls.name;
+
+    if (this.isCpf()) {
+      nameControl.setValidators([Validators.required, nameValidator]);
+    } else {
+      nameControl.setValidators([Validators.required]);
+    }
+
+    nameControl.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private updateValidationBirthDate(): void {
+    const birthDateControl = this.form.controls.birthDate;
+
+    if (this.isCpf()) {
+      birthDateControl.setValidators([Validators.required, dateBeforeTodayValidator()]);
+    } else {
+      birthDateControl.removeValidators([Validators.required, dateBeforeTodayValidator()]);
+    }
+
+    birthDateControl.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private criarFormContato(): FormGroup {
+    return this.fb.group({
+      whatsapp: [false, Validators.required],
+      primaryContact: [false, Validators.required],
+      value: ['', [Validators.required, contactValidator]],
+    });
   }
 
   private setValueForm(clientResponse: ClientResponseDTO): void {
@@ -342,6 +342,10 @@ export class ClientFormComponent implements OnInit {
     }
   }
 
+  adicionarContrato(): void {
+    this.contracts.push(this.criarFormContrato());
+  }
+
   private formatarCep(cep?: string | null): string {
     if (!cep) {
       return '';
@@ -350,10 +354,6 @@ export class ClientFormComponent implements OnInit {
     const valor = cep.replace(/\D/g, '').slice(0, 8);
 
     return valor.length > 5 ? `${valor.slice(0, 5)}-${valor.slice(5)}` : valor;
-  }
-
-  adicionarContrato(): void {
-    this.contracts.push(this.criarFormContrato());
   }
 
   private carregarContatos(contatos: ContactResponseDTO[]): void {

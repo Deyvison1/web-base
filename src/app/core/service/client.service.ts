@@ -14,6 +14,7 @@ import { ClientPageResponse } from '../../shared/dto/response/client-page-respon
 })
 export class ClientService extends BaseHttpService {
   private url: string = environment.apiUrl + '/clients';
+  
   add(client: ClientRequestDTO): Observable<ApiResponseDTO<ClientResponseDTO>> {
     return this.post(this.url, client);
   }

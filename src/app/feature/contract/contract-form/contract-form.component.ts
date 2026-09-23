@@ -5,12 +5,11 @@ import {
   EventEmitter,
   inject,
   Input,
-  OnChanges,
   OnInit,
   Output,
-  SimpleChanges,
 } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormError } from '@supremenetwork/ui';
 
 import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,7 +20,6 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { KeyValueResponseDTO } from '../../../shared/dto/response/key-value-response.dto';
 import { ufsConstant } from '../../../core/constants/ufs.constant';
-import { FormErrorComponent } from '../../../shared/components/form-error/form-error.component';
 import { ClientResponseDTO } from '../../../shared/dto/response/client-response.dto';
 import {
   ProductResponseDTO,
@@ -47,7 +45,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatSelectModule,
     MatSlideToggleModule,
     MatIconModule,
-    FormErrorComponent,
+    FormError,
     NgxCurrency,
     AddressFormComponent,
   ],
@@ -55,7 +53,9 @@ import { MatButtonModule } from '@angular/material/button';
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './contract-form.component.scss',
 })
-export class ContractFormComponent implements OnInit {
+export class ContractFormComponent {
+  private readonly productService = inject(ProductService);
+
   @Input({ required: true })
   form!: ContractFormGroup;
 
@@ -89,10 +89,6 @@ export class ContractFormComponent implements OnInit {
 
     return undefined;
   }
-
-  private readonly productService = inject(ProductService);
-
-  ngOnInit(): void {}
 
   public selectProduct(productId: string | null): void {
     if (!productId) {
@@ -128,6 +124,14 @@ export class ContractFormComponent implements OnInit {
     this.form.controls['endDate'].setValue(endDate);
   }
 
+  compareFn(c1: string | null, c2: string | null): boolean {
+    return c1 === c2;
+  }
+
+  remover(): void {
+    this.removeContract.emit();
+  }
+
   private loadProduct(productId: string): void {
     this.productService.getById(productId).subscribe({
       next: (resp: ApiResponseDTO<ProductSimpleResponseDTO>) => {
@@ -138,13 +142,5 @@ export class ContractFormComponent implements OnInit {
         this.selectedProduct = undefined;
       },
     });
-  }
-
-  compareFn(c1: string | null, c2: string | null): boolean {
-    return c1 === c2;
-  }
-
-  remover(): void {
-    this.removeContract.emit();
   }
 }

@@ -1,17 +1,17 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
-import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { PageHeader } from '@supremenetwork/ui';
 
 import { CategoryResponseDTO } from '../../../shared/dto/response/category-response.dto';
 import { CategorySearchRequestDTO } from '../../../shared/dto/request/category-search-request.dto';
@@ -21,6 +21,9 @@ import { DEFAULT_PAGE_CONFIG } from '../../../core/constants/default-paginator.c
 import { CategoryService } from '../../../core/service/category.service';
 import { PageResponseDTO } from '../../../shared/dto/response/page-response.dto';
 import { CategoryFilterComponent } from '../category-filter/category-filter.component';
+import { NotificationService } from '../../../core/service/notification.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ApiResponseDTO } from '../../../shared/dto/response/api-response.dto';
 
 @Component({
   selector: 'app-category-grid',
@@ -33,18 +36,21 @@ import { CategoryFilterComponent } from '../category-filter/category-filter.comp
     MatTableModule,
     MatPaginatorModule,
     MatTooltipModule,
-    PageHeaderComponent,
-    CategoryFilterComponent
-],
+    PageHeader,
+    CategoryFilterComponent,
+  ],
   templateUrl: './category-grid.component.html',
   styleUrl: './category-grid.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class CategoryGridComponent implements OnInit {
   private readonly categoryService = inject(CategoryService);
+  private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
 
   readonly displayedColumns: string[] = ['name', 'description', 'actions'];
+  @ViewChild(MatSort, { static: true }) sort?: MatSort;
+  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
 
   dataSource: CategoryResponseDTO[] = [];
 
@@ -63,8 +69,8 @@ export class CategoryGridComponent implements OnInit {
         this.dataSource = response.data ?? [];
         this.pageConfig.totalElements = response.total ?? 0;
       },
-      error: (error) => {
-        console.error('Erro ao carregar categorias:', error);
+      error: (error: HttpErrorResponse) => {
+        this.notificationService.error(error);
         this.dataSource = [];
         this.pageConfig.totalElements = 0;
       },
@@ -84,8 +90,6 @@ export class CategoryGridComponent implements OnInit {
     } else {
       this.pageConfig.sort = `${sort.active},${sort.direction}`;
     }
-
-    this.pageConfig.page = 0;
 
     this.getCategories();
   }
@@ -107,11 +111,12 @@ export class CategoryGridComponent implements OnInit {
 
   deleteCategory(id: string): void {
     this.categoryService.deleteCategory(id).subscribe({
-      next: () => {
+      next: (resp: ApiResponseDTO<void>) => {
         this.getCategories();
+        this.notificationService.success(resp.message);
       },
-      error: (error) => {
-        console.error('Erro ao excluir categoria:', error);
+      error: (error: HttpErrorResponse) => {
+        this.notificationService.error(error);
       },
     });
   }

@@ -7,7 +7,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { PageHeader, ConfirmDialog } from '@supremenetwork/ui';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
@@ -25,18 +26,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CpfCnpjPipe } from '../../../shared/pipe/cpf-cnpj.pipe';
 import { DEFAULT_PAGE_CONFIG } from '../../../core/constants/default-paginator.constant';
 import { PageConfig } from '../../../shared/dto/pagination-config';
-import { PageResponseDTO } from '../../../shared/dto/response/page-response.dto';
 import { ConfirmDialogData } from '../../../shared/dto/confirm-dialog-data.dto';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ClientPageResponse } from '../../../shared/dto/response/client-page-response.dto';
 import { NotificationService } from '../../../core/service/notification.service';
-import { ProductFilterComponent } from '../../product/product-filter/product-filter.component';
 
 @Component({
   imports: [
-    PageHeaderComponent,
+    PageHeader,
     CommonModule,
     FormsModule,
     MatButtonModule,
@@ -145,7 +142,7 @@ export class ClientGridComponent implements OnInit, AfterViewInit {
       icon: 'delete',
     };
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
       width: '400px',
       data,
     });
